@@ -1,0 +1,139 @@
+openapi: 3.0.0
+info:
+  title: API de Times de Futebol
+  version: 1.0.0
+  description: API para gerenciar times de futebol.
+servers:
+  - url: http://localhost:5001
+    description: Servidor local
+
+paths:
+  /times:
+    get:
+      summary: Retorna todos os times
+      responses:
+        200:
+          description: Lista de times
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Time'
+    post:
+      summary: Cria um novo time
+      requestBody:
+        description: Dados do novo time
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Time'
+      responses:
+        201:
+          description: Time criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Time'
+
+  /times/{id}:
+    get:
+      summary: Retorna um time pelo ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Dados do time
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Time'
+        404:
+          description: Time não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Atualiza um time pelo ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Dados do time para atualização
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Time'
+      responses:
+        200:
+          description: Time atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Time'
+        404:
+          description: Time não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Deleta um time pelo ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Time deletado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        404:
+          description: Time não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Time:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        nome:
+          type: string
+        pais:
+          type: string
+        ano_fundacao:
+          type: integer
+        estadio:
+          type: string
+        titulos:
+          type: integer
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
