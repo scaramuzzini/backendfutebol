@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from flask_marshmallow import Marshmallow
@@ -6,16 +6,19 @@ from flasgger import Swagger, swag_from
 from flask_cors import CORS
 
 app = Flask(__name__)
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///times.db'
 app.config['SWAGGER'] = {
     'title': 'API de Times de Futebol',
     'uiversion': 3
 }
-CORS(app) 
+#CORS(app) 
+CORS(app, resources={r"/times": {"origins": "*"},
+    r"/times/*": {"origins": "*"}}, headers=['Content-Type', 'ngrok-skip-browser-warning'])
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
-swagger = Swagger(app)
+swagger = Swagger(app, template_file='openapi.yaml')
 
 class Time(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,13 +37,13 @@ time_schema = TimeSchema()
 times_schema = TimeSchema(many=True)
 
 @app.route('/times', methods=['GET'])
-@swag_from('openapi.yaml', endpoint='get_times')
+#@swag_from('openapi.yaml', endpoint='get_times')
 def get_times():
     times = Time.query.all()
     return jsonify(times_schema.dump(times))
 
 @app.route('/times', methods=['POST'])
-@swag_from('openapi.yaml', endpoint='create_time')
+#@swag_from('openapi.yaml', endpoint='create_time')
 def create_time():
     data = request.get_json()
     novo_time = time_schema.load(data)
@@ -49,7 +52,7 @@ def create_time():
     return time_schema.dump(novo_time), 201
 
 @app.route('/times/<int:id>', methods=['GET'])
-@swag_from('openapi.yaml', endpoint='get_time')
+#@swag_from('openapi.yaml', endpoint='get_time')
 def get_time(id):
     time = Time.query.get(id)
     if not time:
@@ -57,7 +60,7 @@ def get_time(id):
     return time_schema.dump(time)
 
 @app.route('/times/<int:id>', methods=['PUT'])
-@swag_from('openapi.yaml', endpoint='update_time')
+#@swag_from('openapi.yaml', endpoint='update_time')
 def update_time(id):
     time = Time.query.get(id)
     if not time:
@@ -69,7 +72,7 @@ def update_time(id):
     return time_schema.dump(time)
 
 @app.route('/times/<int:id>', methods=['DELETE'])
-@swag_from('openapi.yaml', endpoint='delete_time')
+#@swag_from('openapi.yaml', endpoint='delete_time')
 def delete_time(id):
     time = Time.query.get(id)
     if not time:
@@ -82,4 +85,5 @@ def delete_time(id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5000)
+

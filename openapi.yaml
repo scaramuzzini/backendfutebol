@@ -1,12 +1,12 @@
-openapi: 3.0.0
+swagger: "2.0"
 info:
   title: API de Times de Futebol
   version: 1.0.0
   description: API para gerenciar times de futebol.
-servers:
-  - url: http://localhost:5001
-    description: Servidor local
-
+host: localhost:5001
+schemes:
+  - http
+basePath: /
 paths:
   /times:
     get:
@@ -14,29 +14,24 @@ paths:
       responses:
         200:
           description: Lista de times
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Time'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Time'
     post:
       summary: Cria um novo time
-      requestBody:
-        description: Dados do novo time
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Time'
+      parameters:
+        - in: body
+          name: body
+          description: Dados do novo time
+          required: true
+          schema:
+            $ref: '#/definitions/Time'
       responses:
         201:
           description: Time criado com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Time'
-
+          schema:
+            $ref: '#/definitions/Time'
   /times/{id}:
     get:
       summary: Retorna um time pelo ID
@@ -44,96 +39,79 @@ paths:
         - name: id
           in: path
           required: true
-          schema:
-            type: integer
+          type: integer
       responses:
         200:
           description: Dados do time
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Time'
+          schema:
+            $ref: '#/definitions/Time'
         404:
           description: Time não encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          schema:
+            $ref: '#/definitions/Error'
     put:
       summary: Atualiza um time pelo ID
       parameters:
         - name: id
           in: path
           required: true
+          type: integer
+        - in: body
+          name: body
+          description: Dados do time para atualização
+          required: true
           schema:
-            type: integer
-      requestBody:
-        description: Dados do time para atualização
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Time'
+            $ref: '#/definitions/Time'
       responses:
         200:
           description: Time atualizado com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Time'
+          schema:
+            $ref: '#/definitions/Time'
         404:
           description: Time não encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          schema:
+            $ref: '#/definitions/Error'
     delete:
       summary: Deleta um time pelo ID
       parameters:
         - name: id
           in: path
           required: true
-          schema:
-            type: integer
+          type: integer
       responses:
         200:
           description: Time deletado com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Message'
+          schema:
+            $ref: '#/definitions/Message'
         404:
           description: Time não encontrado
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          schema:
+            $ref: '#/definitions/Error'
 
-components:
-  schemas:
-    Time:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        nome:
-          type: string
-        pais:
-          type: string
-        ano_fundacao:
-          type: integer
-        estadio:
-          type: string
-        titulos:
-          type: integer
-    Error:
-      type: object
-      properties:
-        message:
-          type: string
-    Message:
-      type: object
-      properties:
-        message:
-          type: string
+definitions:
+  Time:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      nome:
+        type: string
+      pais:
+        type: string
+      ano_fundacao:
+        type: integer
+      estadio:
+        type: string
+      titulos:
+        type: integer
+  Error:
+    type: object
+    properties:
+      message:
+        type: string
+  Message:
+    type: object
+    properties:
+      message:
+        type: string
